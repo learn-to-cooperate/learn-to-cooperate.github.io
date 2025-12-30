@@ -1,0 +1,46 @@
+/* style.css */
+
+/* Body and text */
+body {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  max-width: 650px;
+  margin: 2rem auto;
+  line-height: 1.7;
+  background-color: #fff9f3;
+  color: #333;
+}
+
+h1 {
+  font-size: 2.2rem;
+  text-align: center;
+  color: #ff6f91;
+  text-shadow: 1px 1px 0 #ffd6e0;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.1rem;
+}
+
+ul {
+  padding-left: 1.5rem;
+}
+
+a {
+  color: #ff758f;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Add a subtle “card” look */
+body > * {
+  background: #fff0f5;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+}
