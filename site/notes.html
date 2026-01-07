@@ -11,12 +11,11 @@
     window.$docsify = {
       name: 'My Digital Garden',
       repo: '',
-      basePath: './notes/entries/', 
+      basePath: '/notes/entries/',
       loadSidebar: true,
       alias: {
-        // This tells Docsify to go up two levels to find the sidebar in the root
-        '/.*/_sidebar.md': '../../_sidebar.md',
-        '/_sidebar.md': '../../_sidebar.md'
+        // This looks for the sidebar in the root folder
+        '/.*/_sidebar.md': '/_sidebar.md'
       },
     auto2top: true
     }
