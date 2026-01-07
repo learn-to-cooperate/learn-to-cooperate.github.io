@@ -28,7 +28,7 @@ jobs:
           # 1. Ensure the directory exists
           mkdir -p notes/entries
           
-          SIDEBAR_FILE="notes/entries/_sidebar.md"
+          SIDEBAR_FILE="_sidebar.md"
           
           # 2. Debugging: List files to see if the submodule actually pulled anything
           echo "Checking for files in notes/entries/..."

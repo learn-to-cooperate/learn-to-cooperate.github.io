@@ -11,11 +11,14 @@
     window.$docsify = {
       name: 'My Digital Garden',
       repo: '',
-      // This is the important part:
-      // It tells Docsify to look inside your submodule folder
       basePath: './notes/entries/', 
-      loadSidebar: true, // Recommended for navigation
-      auto2top: true
+      loadSidebar: true,
+      alias: {
+        // This tells Docsify to go up two levels to find the sidebar in the root
+        '/.*/_sidebar.md': '../../_sidebar.md',
+        '/_sidebar.md': '../../_sidebar.md'
+      },
+    auto2top: true
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
