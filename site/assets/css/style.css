@@ -70,3 +70,25 @@ a:hover {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
   color: #333 !important;
 }
+
+/* 1. Add a smooth transition to the existing card rule */
+main > *, 
+.markdown-section > div > *,
+.markdown-section > * {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+/* 2. The Lift Effect on Hover */
+main > *:hover, 
+.markdown-section > div > *:hover,
+.markdown-section > * :hover {
+  transform: translateY(-4px); /* Moves the card up slightly */
+  box-shadow: 4px 8px 15px rgba(0,0,0,0.1); /* Deeper, softer shadow */
+}
+
+/* 3. Make links pop even more */
+a:hover {
+  color: #ff4d6d;
+  text-decoration: wavy underline; /* A cute little touch */
+}
