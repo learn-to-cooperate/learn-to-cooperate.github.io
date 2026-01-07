@@ -1,60 +1,50 @@
 /* style.css */
 
-/* 1. Global Variables to tell Docsify what colors to use */
-:root {
-  --theme-color: #ff6f91;
-  --base-font-family: "Comic Sans MS", "Comic Sans", cursive;
-  --background: #fdfaf6;
-}
-
-/* 2. Body setup */
+/* 1. Global Setup (Works for both) */
 body {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
-  background-color: #fdfaf6;
+  background-color: #fdfaf6; /* soft cream */
   color: #333;
-  margin: 0; /* Let Docsify handle margins */
+  margin: 0;
+  padding: 1rem;
 }
 
-/* 3. The "Card" Look for your Notes */
-/* Instead of body > *, we target the actual article content */
-section.content {
-  max-width: 650px;
-  margin: 2rem auto;
-}
-
-.markdown-section {
+/* 2. The "Card" Look - Universal Selector */
+/* This targets the <main> in index.html AND the docsify section */
+main, .markdown-section {
   background: #ffffff;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+  max-width: 650px;
+  margin: 2rem auto;
   line-height: 1.7;
 }
 
-/* 4. Typography styling */
-.markdown-section h1 {
+/* 3. Typography (Targets both) */
+h1, .markdown-section h1 {
   font-size: 2.2rem;
   text-align: center;
   color: #ff6f91;
   text-shadow: 1px 1px 0 #ffd6e0;
 }
 
-.markdown-section a {
+p, .markdown-section p {
+  font-size: 1.1rem;
+}
+
+a, .markdown-section a {
   color: #ff758f;
   text-decoration: none;
   font-weight: bold;
 }
 
-.markdown-section a:hover {
+a:hover {
   text-decoration: underline;
 }
 
-/* 5. Sidebar styling to match your vibe */
+/* 4. Sidebar specific (only affects notes.html) */
 .sidebar {
   background-color: #fdfaf6 !important;
   border-right: 1px solid #ffd6e0 !important;
-}
-
-.sidebar-nav li a {
-  font-family: "Comic Sans MS", cursive;
-  color: #ff6f91 !important;
 }
