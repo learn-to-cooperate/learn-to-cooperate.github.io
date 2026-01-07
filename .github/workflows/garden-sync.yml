@@ -25,29 +25,32 @@ jobs:
           
       - name: Generate Sidebar
         run: |
+          # 1. Ensure the directory exists
+          mkdir -p notes/entries
+          
           SIDEBAR_FILE="notes/entries/_sidebar.md"
           
-          # Start the sidebar with a Home link
-          echo "* [🏠 Back to Home](README.md)" > $SIDEBAR_FILE
-          echo "" >> $SIDEBAR_FILE
+          # 2. Debugging: List files to see if the submodule actually pulled anything
+          echo "Checking for files in notes/entries/..."
+          ls -R notes/entries/
           
-          # Loop through .md files in the entries folder
-          # We sort them numerically/alphabetically (0001, 0002...)
-          for file in $(ls notes/entries/*.md | sort); do
+          # 3. Start the sidebar
+          echo "* [🏠 Main Portfolio](../../index.html)" > $SIDEBAR_FILE
+          echo "* [📂 Notes Home](README.md)" >> $SIDEBAR_FILE
+          echo "" >> $SIDEBAR_FILE
+          echo "---" >> $SIDEBAR_FILE
+          
+          # 4. Find all .md files (excluding the sidebar itself)
+          # Using find is more reliable than ls in some environments
+          find notes/entries/ -maxdepth 1 -name "*.md" ! -name "_sidebar.md" ! -name "README.md" | sort | while read file; do
             filename=$(basename "$file")
-            
-            # Skip the sidebar file itself and README
-            if [[ "$filename" != "_sidebar.md" && "$filename" != "README.md" ]]; then
-              # Try to grab the first H1 header for the link text
-              # If no header exists, use the filename
-              title=$(grep -m 1 '^# ' "$file" | sed 's/^# //')
-              if [ -z "$title" ]; then
-                title="${filename%.md}"
-              fi
-              
-              echo "* [$title]($filename)" >> $SIDEBAR_FILE
-            fi
+            title=$(grep -m 1 '^# ' "$file" | sed 's/^# //' || echo "${filename%.md}")
+            echo "* [$title]($filename)" >> $SIDEBAR_FILE
           done
+          
+          # 5. Debugging: Check if file was actually created
+          echo "Content of generated sidebar:"
+          cat $SIDEBAR_FILE
 
       - name: Commit and Push Changes
         run: |
