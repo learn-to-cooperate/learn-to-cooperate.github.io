@@ -1,44 +1,53 @@
 /* style.css */
 
-/* 1. Reset and Background */
+/* --- Global Setup --- */
 body {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
-  background-color: #fdfaf6 !important; /* soft cream */
+  background-color: #fdfaf6; /* soft cream */
   color: #333;
   line-height: 1.7;
+  margin: 0;
+  padding: 0;
 }
 
-/* 2. Centering the Content (The "650px" look) */
-/* This targets the Docsify content area and your index.html <main> */
-.content, main {
+/* --- The Container --- */
+/* This centers the content but keeps the background transparent 
+   so the individual cards can "float" on the cream background */
+main, .markdown-section {
   max-width: 650px;
-  margin: 0 auto !important; /* Forces centering */
-  padding: 2rem 15px;
+  margin: 2rem auto !important;
+  padding: 0 1rem;
+  background: transparent !important;
 }
 
-/* 3. The Card Look */
-/* Targets the markdown section in notes and everything in index.html */
-.markdown-section, main {
-  background: #ffffff; 
-  padding: 2rem;
+/* --- The "Separate Card" Look --- */
+/* This targets every heading, paragraph, and list separately */
+main > *, 
+.markdown-section > div > *,
+.markdown-section > * {
+  background: #ffffff; /* white cards */
+  padding: 1.2rem 1.5rem;
   border-radius: 12px;
   box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem; /* space between the boxes */
+  display: block;
 }
 
-/* 4. Fixing the Sidebar to stay "outside" the center */
-.sidebar {
-  background-color: #fdfaf6 !important;
-  border-right: 1px solid #ffd6e0 !important;
-}
-
-/* 5. Typography */
+/* --- Typography & Links --- */
 h1, .markdown-section h1 {
   font-size: 2.2rem;
   text-align: center;
   color: #ff6f91;
   text-shadow: 1px 1px 0 #ffd6e0;
+  margin-top: 0; /* Keeps spacing clean inside the card */
+}
+
+p, .markdown-section p {
+  font-size: 1.1rem;
+}
+
+ul, .markdown-section ul {
+  padding-left: 2rem;
 }
 
 a, .markdown-section a {
@@ -49,4 +58,15 @@ a, .markdown-section a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* --- Sidebar Styling (Notes page only) --- */
+.sidebar {
+  background-color: #fdfaf6 !important;
+  border-right: 1px solid #ffd6e0 !important;
+}
+
+.sidebar-nav li a {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  color: #333 !important;
 }
