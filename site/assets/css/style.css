@@ -1,46 +1,60 @@
 /* style.css */
 
-/* Body and text */
-body {
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-  max-width: 650px;
-  margin: 2rem auto;
-  line-height: 1.7;
-  background-color: #fdfaf6; /* soft cream */
-  color: #333; /* dark text for readability */
+/* 1. Global Variables to tell Docsify what colors to use */
+:root {
+  --theme-color: #ff6f91;
+  --base-font-family: "Comic Sans MS", "Comic Sans", cursive;
+  --background: #fdfaf6;
 }
 
-h1 {
+/* 2. Body setup */
+body {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  background-color: #fdfaf6;
+  color: #333;
+  margin: 0; /* Let Docsify handle margins */
+}
+
+/* 3. The "Card" Look for your Notes */
+/* Instead of body > *, we target the actual article content */
+section.content {
+  max-width: 650px;
+  margin: 2rem auto;
+}
+
+.markdown-section {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
+  line-height: 1.7;
+}
+
+/* 4. Typography styling */
+.markdown-section h1 {
   font-size: 2.2rem;
   text-align: center;
   color: #ff6f91;
   text-shadow: 1px 1px 0 #ffd6e0;
-  margin-bottom: 1rem;
 }
 
-p {
-  font-size: 1.1rem;
-}
-
-ul {
-  padding-left: 1.5rem;
-}
-
-a {
+.markdown-section a {
   color: #ff758f;
   text-decoration: none;
   font-weight: bold;
 }
 
-a:hover {
+.markdown-section a:hover {
   text-decoration: underline;
 }
 
-/* Subtle “card” look for sections */
-body > * {
-  background: #ffffff; /* white cards */
-  padding: 1rem 1.2rem;
-  border-radius: 12px;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
-  margin-bottom: 1rem;
+/* 5. Sidebar styling to match your vibe */
+.sidebar {
+  background-color: #fdfaf6 !important;
+  border-right: 1px solid #ffd6e0 !important;
+}
+
+.sidebar-nav li a {
+  font-family: "Comic Sans MS", cursive;
+  color: #ff6f91 !important;
 }

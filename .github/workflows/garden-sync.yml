@@ -1,0 +1,59 @@
+name: Sync Notes and Generate Sidebar
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allows you to run it manually with a button
+  schedule:
+    - cron: '0 0 * * *' # This runs every night at midnight (00:00 UTC)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Main Repo
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Submodule to Latest
+        run: |
+          git submodule update --remote --merge
+          
+      - name: Generate Sidebar
+        run: |
+          SIDEBAR_FILE="notes/entries/_sidebar.md"
+          
+          # Start the sidebar with a Home link
+          echo "* [🏠 Back to Home](README.md)" > $SIDEBAR_FILE
+          echo "" >> $SIDEBAR_FILE
+          
+          # Loop through .md files in the entries folder
+          # We sort them numerically/alphabetically (0001, 0002...)
+          for file in $(ls notes/entries/*.md | sort); do
+            filename=$(basename "$file")
+            
+            # Skip the sidebar file itself and README
+            if [[ "$filename" != "_sidebar.md" && "$filename" != "README.md" ]]; then
+              # Try to grab the first H1 header for the link text
+              # If no header exists, use the filename
+              title=$(grep -m 1 '^# ' "$file" | sed 's/^# //')
+              if [ -z "$title" ]; then
+                title="${filename%.md}"
+              fi
+              
+              echo "* [$title]($filename)" >> $SIDEBAR_FILE
+            fi
+          done
+
+      - name: Commit and Push Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          # Only commit if there are actually changes
+          git diff-index --quiet HEAD || git commit -m "Update notes submodule and sidebar"
+          git push
