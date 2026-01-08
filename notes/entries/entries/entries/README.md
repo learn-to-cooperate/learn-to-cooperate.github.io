@@ -1,2 +1,0 @@
-# notes
-Working notes.
