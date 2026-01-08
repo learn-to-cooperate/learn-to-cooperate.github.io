@@ -1,4 +1,29 @@
-- name: Force Extract Submodule to Physical Folder
+name: Sync Notes and Generate Sidebar
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: 
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Main Repo
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Submodule to Latest
+        run: |
+          git submodule update --remote --merge
+
+      - name: Force Extract Submodule to Physical Folder
         run: |
           # 1. Ensure submodule files are present
           git submodule update --init --recursive
