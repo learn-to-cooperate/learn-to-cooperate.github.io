@@ -2,9 +2,9 @@ name: Sync Notes and Generate Sidebar
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Allows you to run it manually with a button
+  workflow_dispatch: 
   schedule:
-    - cron: '0 0 * * *' # This runs every night at midnight (00:00 UTC)
+    - cron: '0 0 * * *'
 
 jobs:
   build:
@@ -25,38 +25,33 @@ jobs:
           
       - name: Generate Sidebar
         run: |
-          # 1. Ensure the directory exists
-          mkdir -p notes/entries
-          
           SIDEBAR_FILE="_sidebar.md"
           
-          # 2. Debugging: List files to see if the submodule actually pulled anything
-          echo "Checking for files in notes/entries/..."
-          ls -R notes/entries/
-          
-          # 3. Start the sidebar
-          echo "* [🏠 Main Portfolio](../../index.html)" > $SIDEBAR_FILE
-          echo "* [📂 Notes Home](README.md)" >> $SIDEBAR_FILE
+          # 1. Static Links
+          # Pointing to index.html in root and / for Docsify home
+          echo "* [🏠 Main Portfolio](index.html)" > $SIDEBAR_FILE
+          echo "* [📂 Notes Home](/)" >> $SIDEBAR_FILE
           echo "" >> $SIDEBAR_FILE
           echo "---" >> $SIDEBAR_FILE
           
-          # 4. Find all .md files (excluding the sidebar itself)
-          # Using find is more reliable than ls in some environments
-          find notes/entries/ -maxdepth 1 -name "*.md" ! -name "_sidebar.md" ! -name "README.md" | sort | while read file; do
-            filename=$(basename "$file")
-            title=$(grep -m 1 '^# ' "$file" | sed 's/^# //' || echo "${filename%.md}")
-            echo "* [$title]($filename)" >> $SIDEBAR_FILE
-          done
-          
-          # 5. Debugging: Check if file was actually created
-          echo "Content of generated sidebar:"
-          cat $SIDEBAR_FILE
+          # 2. Generate links from the actual submodule path
+          # We look in notes/entries/ but keep the link clean for Docsify
+          if [ -d "notes/entries" ]; then
+            find notes/entries/ -maxdepth 1 -name "*.md" ! -name "README.md" | sort | while read file; do
+              filename=$(basename "$file")
+              linkname="${filename%.md}"
+              # Try to grab the first H1 for the title, fallback to filename
+              title=$(grep -m 1 '^# ' "$file" | sed 's/^# //' || echo "$linkname")
+              echo "* [$title]($linkname)" >> $SIDEBAR_FILE
+            done
+          else
+            echo "Warning: notes/entries directory not found!"
+          fi
 
       - name: Commit and Push Changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          # Only commit if there are actually changes
-          git diff-index --quiet HEAD || git commit -m "Update notes submodule and sidebar"
-          git push
+          # Only commit if the sidebar or submodule pointer actually changed
+          git diff-index --quiet HEAD || (git commit -m "Update notes submodule and sidebar" && git push)
