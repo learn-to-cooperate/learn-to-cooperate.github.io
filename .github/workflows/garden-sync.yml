@@ -23,36 +23,42 @@ jobs:
         run: |
           git submodule update --remote --merge
 
-      # --- NEW STEP: FORCE EXTRACT ---
-      - name: Force Extract Submodule to Physical Folder
+- name: Force Extract Submodule to Physical Folder
         run: |
-          # Copy files to a temp location
-          mkdir -p temp_notes
-          cp -r notes/* temp_notes/
+          # 1. Get the files from the submodule
+          git submodule update --init --recursive
           
-          # Remove the 'gitlink' (the submodule pointer)
+          # 2. Move them to a safe temporary spot outside the 'notes' path
+          mkdir -p /tmp/extracted_notes
+          cp -r notes/* /tmp/extracted_notes/
+          
+          # 3. Completely wipe the 'notes' path (removes the gitlink and the double entries)
           git rm -rf notes || rm -rf notes
           
-          # Recreate notes/entries as a REAL physical directory
+          # 4. Create the clean target folder
           mkdir -p notes/entries
-          cp -r temp_notes/* notes/entries/
-          rm -rf temp_notes
-      # -------------------------------
+          
+          # 5. Move files from temp into the clean folder
+          # We use /tmp/extracted_notes/* to avoid nesting
+          cp -r /tmp/extracted_notes/* notes/entries/
+          
+          # 6. Cleanup temp
+          rm -rf /tmp/extracted_notes
 
       - name: Generate Sidebar
         run: |
           SIDEBAR_FILE="_sidebar.md"
           echo "* [🏠 Main Portfolio](index.html)" > $SIDEBAR_FILE
-          echo "* [📂 Notes Home](/)" >> $SIDEBAR_FILE
+          echo "* [📂 Notes Home](notes.html#/)" >> $SIDEBAR_FILE
           echo "" >> $SIDEBAR_FILE
           echo "---" >> $SIDEBAR_FILE
           
+          # Look specifically in the new clean folder
           if [ -d "notes/entries" ]; then
             find notes/entries/ -maxdepth 1 -name "*.md" ! -name "README.md" | sort | while read file; do
               filename=$(basename "$file")
-              linkname="notes/entries/${filename%.md}" # Updated path for root basePath
-              title=$(grep -m 1 '^# ' "$file" | sed 's/^# //' || echo "${filename%.md}")
-              echo "* [$title]($linkname)" >> $SIDEBAR_FILE
+              # Link relative to notes.html basePath '/'
+              echo "* [${filename%.md}](notes/entries/${filename%.md})" >> $SIDEBAR_FILE
             done
           fi
 
