@@ -2,4 +2,3 @@
 * [📂 Notes Home](/)
 
 ---
-* [Rules](notes/entries/rules)
