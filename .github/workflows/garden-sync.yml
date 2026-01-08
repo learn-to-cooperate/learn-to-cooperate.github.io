@@ -1,49 +1,28 @@
-name: Sync Notes and Generate Sidebar
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch: 
-  schedule:
-    - cron: '0 0 * * *'
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout Main Repo
-        uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update Submodule to Latest
+- name: Force Extract Submodule to Physical Folder
         run: |
-          git submodule update --remote --merge
-
-      - name: Force Extract Submodule to Physical Folder
-        run: |
-          # 1. Get the submodule files
+          # 1. Ensure submodule files are present
           git submodule update --init --recursive
           
-          # 2. Move them to a completely neutral location outside the workspace
-          mkdir -p ../temp_flat_notes
-          cp -r notes/* ../temp_flat_notes/
+          # 2. Create a temporary staging area
+          mkdir -p /tmp/garden_staging
           
-          # 3. DELETE the entire notes folder from the repo to kill the nesting
-          git rm -rf notes || rm -rf notes
+          # 3. Sync content ONLY (no nesting) to staging
+          # This takes everything inside 'notes/' and puts it in staging
+          cp -r notes/. /tmp/garden_staging/
           
-          # 4. Recreate the clean structure from scratch
+          # 4. Wipe the 'notes' path from Git's memory entirely
+          git rm -rf notes --ignore-unmatch
+          rm -rf notes
+          
+          # 5. Rebuild the physical path
           mkdir -p notes/entries
           
-          # 5. Move CONTENTS (not the folder) into the target
-          # The dot at the end of the source ensures we take only the contents
-          cp -r ../temp_flat_notes/. notes/entries/
+          # 6. Move files back into the target folder
+          cp -r /tmp/garden_staging/. notes/entries/
           
-          # 6. Final safety check: remove any accidentally copied sub-entries
+          # 7. Final Cleanup of any accidental recursion
           rm -rf notes/entries/entries
+          rm -rf notes/entries/notes
 
       - name: Generate Sidebar
         run: |
@@ -53,12 +32,12 @@ jobs:
           echo "" >> $SIDEBAR_FILE
           echo "---" >> $SIDEBAR_FILE
           
-          # Look specifically in the new clean folder
+          # Find all .md files in the new flat folder
           if [ -d "notes/entries" ]; then
-            find notes/entries/ -maxdepth 1 -name "*.md" ! -name "README.md" | sort | while read file; do
-              filename=$(basename "$file")
-              # Link relative to notes.html basePath '/'
-              echo "* [${filename%.md}](notes/entries/${filename%.md})" >> $SIDEBAR_FILE
+            # We use -printf to get just the filename to avoid path issues
+            find notes/entries -maxdepth 1 -name "*.md" ! -name "README.md" -exec basename {} \; | sort | while read filename; do
+              title=$(grep -m 1 '^# ' "notes/entries/$filename" | sed 's/^# //' || echo "${filename%.md}")
+              echo "* [$title](notes/entries/${filename%.md})" >> $SIDEBAR_FILE
             done
           fi
 
@@ -66,6 +45,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # We force add because we want to turn the submodule into a folder
-          git add _sidebar.md notes/
+          # FORCE add the notes folder so Git sees it as a folder, not a submodule
+          git add -f notes/
+          git add _sidebar.md
+          git commit -m "chore: flatten notes structure and update sidebar" || echo "No changes to commit"
+          git push origin main
           git diff-index --quiet HEAD || (git commit -m "fix: extract submodule to folder and update sidebar" && git push)
