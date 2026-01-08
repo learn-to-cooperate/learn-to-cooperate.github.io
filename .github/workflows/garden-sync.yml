@@ -25,29 +25,24 @@ jobs:
 
       - name: Force Extract Submodule to Physical Folder
         run: |
-          # 1. Ensure submodule files are present
-          git submodule update --init --recursive
+          # 1. Force the submodule to download its files into the 'notes' folder
+          git submodule update --init --recursive --force
           
-          # 2. Create a temporary staging area
-          mkdir -p /tmp/garden_staging
+          # 2. Create the target directory
+          mkdir -p notes_new/entries
           
-          # 3. Sync content ONLY (no nesting) to staging
-          # This takes everything inside 'notes/' and puts it in staging
-          cp -r notes/. /tmp/garden_staging/
+          # 3. Copy the files from the submodule into our new folder
+          # We use a different name 'notes_new' to avoid the "No such file" error
+          cp -r notes/* notes_new/entries/ || echo "Copying files..."
           
-          # 4. Wipe the 'notes' path from Git's memory entirely
-          git rm -rf notes --ignore-unmatch
-          rm -rf notes
+          # 4. Delete the 'gitlink' and the old folder structure
+          git rm -rf notes || rm -rf notes
           
-          # 5. Rebuild the physical path
-          mkdir -p notes/entries
+          # 5. Rename notes_new to notes (now it's a real folder, not a link)
+          mv notes_new notes
           
-          # 6. Move files back into the target folder
-          cp -r /tmp/garden_staging/. notes/entries/
-          
-          # 7. Final Cleanup of any accidental recursion
+          # 6. Final cleanup of any accidental nesting
           rm -rf notes/entries/entries
-          rm -rf notes/entries/notes
 
       - name: Generate Sidebar
         run: |
@@ -57,12 +52,15 @@ jobs:
           echo "" >> $SIDEBAR_FILE
           echo "---" >> $SIDEBAR_FILE
           
-          # Find all .md files in the new flat folder
+          # Use a simple loop that doesn't care about directory depth
           if [ -d "notes/entries" ]; then
-            # We use -printf to get just the filename to avoid path issues
-            find notes/entries -maxdepth 1 -name "*.md" ! -name "README.md" -exec basename {} \; | sort | while read filename; do
-              title=$(grep -m 1 '^# ' "notes/entries/$filename" | sed 's/^# //' || echo "${filename%.md}")
-              echo "* [$title](notes/entries/${filename%.md})" >> $SIDEBAR_FILE
+            for file in notes/entries/*.md; do
+              [ -e "$file" ] || continue
+              filename=$(basename "$file")
+              if [ "$filename" != "README.md" ]; then
+                title=$(grep -m 1 '^# ' "$file" | sed 's/^# //' || echo "${filename%.md}")
+                echo "* [$title](notes/entries/${filename%.md})" >> $SIDEBAR_FILE
+              fi
             done
           fi
 
