@@ -1,0 +1,3 @@
+[submodule "notes_submodule"]
+    path = notes_submodule
+    url = https://github.com/learn-to-cooperate.github.io/notes.git

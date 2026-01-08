@@ -17,66 +17,68 @@ jobs:
         with:
           submodules: 'recursive'
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Ensure you use a PAT if your notes repo is private
+          token: ${{ secrets.MY_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Update Submodule to Latest
         run: |
           git submodule update --remote --merge
 
-      - name: Force Extract Submodule to Physical Folder
+      - name: Sync Files to Real Folder
         run: |
-          # 1. Initialize and FORCE update the submodule
-          git submodule update --init --recursive --force
+          # 1. Create target directory
+          mkdir -p notes/entries
           
-          # 2. Debug: List what is actually inside 'notes' so we can see it in the logs
-          echo "Checking submodule content:"
-          ls -R notes
-          
-          # 3. Create target
-          mkdir -p notes_new/entries
-          
-          # 4. Copying with a 'dot' to ensure hidden files and subfolders are caught
-          # We use /notes/. to signify "everything inside the notes folder"
-          cp -r notes/. notes_new/entries/
-          
-          # 5. Prevent the disappearing folder trick
-          touch notes_new/entries/.gitkeep
-          
-          # 6. Swap the 'gitlink' for the real folder
-          git rm -rf notes || rm -rf notes
-          mv notes_new notes
-          
-          # 7. Cleanup the mess
-          rm -rf notes/entries/.git # Remove the submodule's internal git history
-          rm -rf notes/entries/entries # Remove accidental nesting
+          # 2. Copy contents from submodule to the real folder
+          # Assuming your submodule is now named 'notes_submodule'
+          if [ -d "notes_submodule/entries" ]; then
+            cp -a notes_submodule/entries/. notes/entries/
+          else
+            echo "Error: notes_submodule/entries not found!"
+            exit 1
+          fi
 
       - name: Generate Sidebar
         run: |
-          SIDEBAR_FILE="_sidebar.md"
+          SIDEBAR_FILE="notes/_sidebar.md"
           echo "* [🏠 Main Portfolio](index.html)" > $SIDEBAR_FILE
           echo "* [📂 Notes Home](notes.html#/)" >> $SIDEBAR_FILE
           echo "" >> $SIDEBAR_FILE
           echo "---" >> $SIDEBAR_FILE
           
-          # Use a simple loop that doesn't care about directory depth
+          # Use find to handle spaces and hidden files
           if [ -d "notes/entries" ]; then
-            for file in notes/entries/*.md; do
-              [ -e "$file" ] || continue
+            find notes/entries -name "*.md" | sort | while read -r file; do
               filename=$(basename "$file")
-              if [ "$filename" != "README.md" ]; then
-                title=$(grep -m 1 '^# ' "$file" | sed 's/^# //' || echo "${filename%.md}")
-                echo "* [$title](notes/entries/${filename%.md})" >> $SIDEBAR_FILE
+              
+              # Skip specific system files
+              if [[ "$filename" != "README.md" && "$filename" != "_sidebar.md" ]]; then
+                # Get first H1 title, or fallback to filename
+                title=$(grep -m 1 '^# ' "$file" | sed 's/^# //' || echo "")
+                if [ -z "$title" ]; then
+                  title="${filename%.md}"
+                fi
+                
+                # Link is relative to the sidebar location (inside /notes/)
+                echo "* [$title](entries/${filename%.md})" >> $SIDEBAR_FILE
               fi
             done
           fi
 
-      - name: Commit and Push Changes
+      - name: Commit and Push
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # FORCE add the notes folder so Git sees it as a folder, not a submodule
-          git add -f notes/
-          git add _sidebar.md
-          git commit -m "chore: flatten notes structure and update sidebar" || echo "No changes to commit"
-          git push origin main
-          git diff-index --quiet HEAD || (git commit -m "fix: extract submodule to folder and update sidebar" && git push)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Get the latest commit hash from the submodule for the message
+          SUB_HASH=$(cd notes_submodule && git rev-parse --short HEAD)
+          
+          git add notes/
+          git add notes_submodule
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Sync notes: updated to $SUB_HASH and refreshed sidebar"
+            git push
+          fi
