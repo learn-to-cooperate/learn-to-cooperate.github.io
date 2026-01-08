@@ -21,12 +21,9 @@ jobs:
           token: ${{ secrets.MY_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Update Submodule to Latest
-        - name: Update Submodule to Latest
+      
         run: |
           git submodule update --init --recursive --force
-          git submodule update --remote --merge
-
-        run: |
           git submodule update --remote --merge
 
       - name: Sync Files to Real Folder
