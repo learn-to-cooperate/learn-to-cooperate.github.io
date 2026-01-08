@@ -1,4 +1,4 @@
-* [🏠 Main Portfolio](../index.html)
+* [🏠 Main Portfolio](index.html :ignore)
 * [📂 Notes Home](README.md)
 
 ---
