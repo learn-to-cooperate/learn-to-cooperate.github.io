@@ -23,26 +23,32 @@ jobs:
         run: |
           git submodule update --remote --merge
 
-      - name: Force Extract Submodule to Physical Folder
+- name: Force Extract Submodule to Physical Folder
         run: |
-          # 1. Sync submodule
+          # 1. Initialize and FORCE update the submodule
           git submodule update --init --recursive --force
           
-          # 2. Prepare staging
+          # 2. Debug: List what is actually inside 'notes' so we can see it in the logs
+          echo "Checking submodule content:"
+          ls -R notes
+          
+          # 3. Create target
           mkdir -p notes_new/entries
           
-          # 3. Copy files (ignore errors if submodule is empty)
-          cp -r notes/* notes_new/entries/ 2>/dev/null || echo "Submodule empty, moving on..."
+          # 4. Copying with a 'dot' to ensure hidden files and subfolders are caught
+          # We use /notes/. to signify "everything inside the notes folder"
+          cp -r notes/. notes_new/entries/
           
-          # 4. NUCLEAR FIX: Ensure the folder is NEVER empty so it won't vanish
+          # 5. Prevent the disappearing folder trick
           touch notes_new/entries/.gitkeep
           
-          # 5. The Switcheroo
+          # 6. Swap the 'gitlink' for the real folder
           git rm -rf notes || rm -rf notes
           mv notes_new notes
           
-          # 6. Cleanup nesting
-          rm -rf notes/entries/entries
+          # 7. Cleanup the mess
+          rm -rf notes/entries/.git # Remove the submodule's internal git history
+          rm -rf notes/entries/entries # Remove accidental nesting
 
       - name: Generate Sidebar
         run: |
