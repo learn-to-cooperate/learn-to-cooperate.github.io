@@ -11,15 +11,13 @@
     window.$docsify = {
       name: 'My Digital Garden',
       repo: '',
-      basePath: 'notes/entries/',
-      homepage: '../../README.md',
+      basePath: '/notes/',
+      homepage: 'README.md',
+      auto2top: true,
       loadSidebar: true,
       alias: {
-        // This looks for the sidebar in the root folder
-        '/.*/_sidebar.md': '../../_sidebar.md',
-        '/_sidebar.md': '../../_sidebar.md'
-      },
-    auto2top: true
+        '/.*/_sidebar.md': '/_sidebar.md'
+      }
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
