@@ -25,23 +25,23 @@ jobs:
 
       - name: Force Extract Submodule to Physical Folder
         run: |
-          # 1. Force the submodule to download its files into the 'notes' folder
+          # 1. Sync submodule
           git submodule update --init --recursive --force
           
-          # 2. Create the target directory
+          # 2. Prepare staging
           mkdir -p notes_new/entries
           
-          # 3. Copy the files from the submodule into our new folder
-          # We use a different name 'notes_new' to avoid the "No such file" error
-          cp -r notes/* notes_new/entries/ || echo "Copying files..."
+          # 3. Copy files (ignore errors if submodule is empty)
+          cp -r notes/* notes_new/entries/ 2>/dev/null || echo "Submodule empty, moving on..."
           
-          # 4. Delete the 'gitlink' and the old folder structure
+          # 4. NUCLEAR FIX: Ensure the folder is NEVER empty so it won't vanish
+          touch notes_new/entries/.gitkeep
+          
+          # 5. The Switcheroo
           git rm -rf notes || rm -rf notes
-          
-          # 5. Rename notes_new to notes (now it's a real folder, not a link)
           mv notes_new notes
           
-          # 6. Final cleanup of any accidental nesting
+          # 6. Cleanup nesting
           rm -rf notes/entries/entries
 
       - name: Generate Sidebar
