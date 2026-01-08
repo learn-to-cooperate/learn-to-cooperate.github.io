@@ -1,5 +1,5 @@
-* [🏠 Main Portfolio](index.html)
-* [📂 Notes Home](notes.html#/)
+* [🏠 Main Portfolio](../index.html)
+* [📂 Notes Home](README.md)
 
 ---
 * [0001](entries/0001)
