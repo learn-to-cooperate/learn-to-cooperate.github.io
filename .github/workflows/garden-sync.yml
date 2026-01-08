@@ -50,10 +50,10 @@ jobs:
           fi
 
           # 2. Start Sidebar Generation
-          echo "* [🏠 Main Portfolio](index.html :ignore)" > $SIDEBAR_FILE
-          echo "* [📂 Notes Home](README.md)" >> $SIDEBAR_FILE
-          echo "" >> $SIDEBAR_FILE
-          echo "---" >> $SIDEBAR_FILE
+          echo "* <a href=\"/\" target=\"_self\">🏠 Main Portfolio</a>" > $SIDEBAR_FILE
+          echo '* [📂 Notes Home](README.md)' >> $SIDEBAR_FILE
+          echo '' >> $SIDEBAR_FILE
+          echo '---' >> $SIDEBAR_FILE
           
           if [ -d "notes/entries" ]; then
             find notes/entries -name "*.md" | sort | while read -r file; do
