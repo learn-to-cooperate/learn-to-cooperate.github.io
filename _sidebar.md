@@ -1,4 +1,4 @@
 * [🏠 Main Portfolio](index.html)
-* [📂 Notes Home](/)
+* [📂 Notes Home](notes.html#/)
 
 ---
