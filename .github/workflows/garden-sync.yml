@@ -40,6 +40,16 @@ jobs:
       - name: Generate Sidebar
         run: |
           SIDEBAR_FILE="notes/_sidebar.md"
+          HOME_FILE="notes/README.md"
+
+          # 1. Create a Home Page if it doesn't exist
+          if [ ! -f "$HOME_FILE" ]; then
+            echo "# 📓 My Digital Garden" > $HOME_FILE
+            echo "" >> $HOME_FILE
+            echo "Welcome to my notes collection. Use the sidebar to browse by topic." >> $HOME_FILE
+          fi
+
+          # 2. Start Sidebar Generation
           echo "* [🏠 Main Portfolio](index.html)" > $SIDEBAR_FILE
           echo "* [📂 Notes Home](notes.html#/)" >> $SIDEBAR_FILE
           echo "" >> $SIDEBAR_FILE
