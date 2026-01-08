@@ -25,25 +25,25 @@ jobs:
 
       - name: Force Extract Submodule to Physical Folder
         run: |
-          # 1. Get the files from the submodule
+          # 1. Get the submodule files
           git submodule update --init --recursive
           
-          # 2. Move them to a safe temporary spot outside the 'notes' path
-          mkdir -p /tmp/extracted_notes
-          cp -r notes/* /tmp/extracted_notes/
+          # 2. Move them to a completely neutral location outside the workspace
+          mkdir -p ../temp_flat_notes
+          cp -r notes/* ../temp_flat_notes/
           
-          # 3. Completely wipe the 'notes' path (removes the gitlink and the double entries)
+          # 3. DELETE the entire notes folder from the repo to kill the nesting
           git rm -rf notes || rm -rf notes
           
-          # 4. Create the clean target folder
+          # 4. Recreate the clean structure from scratch
           mkdir -p notes/entries
           
-          # 5. Move files from temp into the clean folder
-          # We use /tmp/extracted_notes/* to avoid nesting
-          cp -r /tmp/extracted_notes/* notes/entries/
+          # 5. Move CONTENTS (not the folder) into the target
+          # The dot at the end of the source ensures we take only the contents
+          cp -r ../temp_flat_notes/. notes/entries/
           
-          # 6. Cleanup temp
-          rm -rf /tmp/extracted_notes
+          # 6. Final safety check: remove any accidentally copied sub-entries
+          rm -rf notes/entries/entries
 
       - name: Generate Sidebar
         run: |
