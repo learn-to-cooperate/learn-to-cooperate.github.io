@@ -1,4 +1,4 @@
-* [🏠 Main Portfolio](index.html :ignore)
+* <a href="/" target="_self">🏠 Main Portfolio</a>
 * [📂 Notes Home](README.md)
 
 ---
