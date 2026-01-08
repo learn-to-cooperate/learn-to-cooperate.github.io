@@ -50,7 +50,7 @@ jobs:
           fi
 
           # 2. Start Sidebar Generation
-          echo "* [🏠 Main Portfolio](../index.html)" > $SIDEBAR_FILE
+          echo "* [🏠 Main Portfolio](index.html :ignore)" > $SIDEBAR_FILE
           echo "* [📂 Notes Home](README.md)" >> $SIDEBAR_FILE
           echo "" >> $SIDEBAR_FILE
           echo "---" >> $SIDEBAR_FILE
