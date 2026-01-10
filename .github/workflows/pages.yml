@@ -1,4 +1,14 @@
-name: Build and Deploy
+name: Build and Deploy Pages
+
+on:
+  # Trigger 1: After the Sync workflow finishes
+  workflow_run:
+    workflows: ["Sync Notes and Generate Sidebar"]
+    types:
+      - completed
+  
+  # Trigger 2: Manual "Run workflow" button in GitHub UI
+  workflow_dispatch:
 
 on:
   workflow_dispatch:  # manual trigger
