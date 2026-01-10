@@ -10,9 +10,6 @@ on:
   # Trigger 2: Manual "Run workflow" button in GitHub UI
   workflow_dispatch:
 
-on:
-  workflow_dispatch:  # manual trigger
-
 permissions:
   pages: write
   id-token: write
