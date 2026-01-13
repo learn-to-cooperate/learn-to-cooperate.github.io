@@ -6,3 +6,5 @@
 * [0002.md – Why People Cooperate](entries/0002)
 * [Mythos Motivation](entries/0003)
 * [Org Profile Setup](entries/0004)
+* [A Minimalistic Template](entries/0005)
+* [{{Title}}](entries/_template)
