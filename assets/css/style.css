@@ -2,93 +2,96 @@
 
 /* --- Global Setup --- */
 body {
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-  background-color: #fdfaf6; /* soft cream */
+  /* Using system-fonts fallback for better mobile performance */
+  font-family: "Comic Sans MS", "Comic Sans", cursive, sans-serif;
+  background-color: #fdfaf6;
   color: #333;
-  line-height: 1.7;
+  line-height: 1.6;
   margin: 0;
   padding: 0;
+  /* Ensures font size stays legible on high-density mobile screens */
+  -webkit-text-size-adjust: 100%; 
 }
 
 /* --- The Container --- */
-/* This centers the content but keeps the background transparent 
-   so the individual cards can "float" on the cream background */
 main, .markdown-section {
-  max-width: 650px;
-  margin: 2rem auto !important;
-  padding: 0 1rem;
+  /* Use a percentage for width so it doesn't overflow on small screens */
+  width: 90%;
+  max-width: 650px; 
+  margin: 1.5rem auto !important;
+  padding: 0;
   background: transparent !important;
 }
 
 /* --- The "Separate Card" Look --- */
-/* This targets every heading, paragraph, and list separately */
 main > *, 
 .markdown-section > div > *,
 .markdown-section > * {
-  background: #ffffff; /* white cards */
-  padding: 1.2rem 1.5rem;
+  background: #ffffff;
+  /* Use 'rem' or 'vw' for padding so it scales slightly */
+  padding: 1.2rem; 
   border-radius: 12px;
   box-shadow: 2px 2px 6px rgba(0,0,0,0.05);
-  margin-bottom: 1.2rem; /* space between the boxes */
+  margin-bottom: 1rem;
   display: block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* Fix: prevent cards from overflowing their parent */
+  box-sizing: border-box; 
+  word-wrap: break-word;
 }
 
-/* --- Typography & Links --- */
+/* --- Responsive Typography --- */
+/* Using 'clamp' ensures the font is never too small or too big */
 h1, .markdown-section h1 {
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
   text-align: center;
   color: #ff6f91;
   text-shadow: 1px 1px 0 #ffd6e0;
-  margin-top: 0; /* Keeps spacing clean inside the card */
+  margin-top: 0;
 }
 
 p, .markdown-section p {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 4vw, 1.1rem);
 }
 
-ul, .markdown-section ul {
-  padding-left: 2rem;
+/* --- Interactions --- */
+/* Fixed the hover selector: removed the space before :hover */
+main > *:hover, 
+.markdown-section > div > *:hover,
+.markdown-section > *:hover {
+  transform: translateY(-4px);
+  box-shadow: 4px 8px 15px rgba(0,0,0,0.1);
 }
 
+/* Disable hover lift on mobile (touch devices) to avoid sticky states */
+@media (hover: none) {
+  main > *:hover, 
+  .markdown-section > *:hover {
+    transform: none;
+  }
+}
+
+/* --- Sidebar Mobile Fixes --- */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 250px; /* Standard mobile width */
+  }
+  
+  /* Ensure content doesn't feel squashed on tiny screens */
+  .markdown-section {
+    width: 95%;
+  }
+}
+
+/* --- Links --- */
 a, .markdown-section a {
   color: #ff758f;
   text-decoration: none;
   font-weight: bold;
+  word-break: break-all; /* Prevents long URLs from breaking the card */
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-/* --- Sidebar Styling (Notes page only) --- */
-.sidebar {
-  background-color: #fdfaf6 !important;
-  border-right: 1px solid #ffd6e0 !important;
-}
-
-.sidebar-nav li a {
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-  color: #333 !important;
-}
-
-/* 1. Add a smooth transition to the existing card rule */
-main > *, 
-.markdown-section > div > *,
-.markdown-section > * {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: default;
-}
-
-/* 2. The Lift Effect on Hover */
-main > *:hover, 
-.markdown-section > div > *:hover,
-.markdown-section > * :hover {
-  transform: translateY(-4px); /* Moves the card up slightly */
-  box-shadow: 4px 8px 15px rgba(0,0,0,0.1); /* Deeper, softer shadow */
-}
-
-/* 3. Make links pop even more */
 a:hover {
   color: #ff4d6d;
-  text-decoration: wavy underline; /* A cute little touch */
+  text-decoration: wavy underline;
 }
