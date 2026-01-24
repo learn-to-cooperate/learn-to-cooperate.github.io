@@ -7,4 +7,5 @@
 * [Mythos Motivation](entries/0003)
 * [Org Profile Setup](entries/0004)
 * [A Minimalistic Template](entries/0005)
+* [Cooperation vs Self-Reliance](entries/0006)
 * [{{Title}}](entries/_template)
