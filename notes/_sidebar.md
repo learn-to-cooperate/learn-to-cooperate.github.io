@@ -8,4 +8,5 @@
 * [Org Profile Setup](entries/0004)
 * [A Minimalistic Template](entries/0005)
 * [Cooperation vs Self-Reliance](entries/0006)
+* [The shadow side of "cooperation"](entries/0007)
 * [{{Title}}](entries/_template)
