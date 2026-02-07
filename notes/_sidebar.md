@@ -9,4 +9,5 @@
 * [A Minimalistic Template](entries/0005)
 * [Cooperation vs Self-Reliance](entries/0006)
 * [The shadow side of "cooperation"](entries/0007)
+* [Cooperation in Crises](entries/0008)
 * [{{Title}}](entries/_template)
