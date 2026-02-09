@@ -10,4 +10,5 @@
 * [Cooperation vs Self-Reliance](entries/0006)
 * [The shadow side of "cooperation"](entries/0007)
 * [Cooperation in Crises](entries/0008)
+* [When cooperation is not optional](entries/0009)
 * [{{Title}}](entries/_template)
