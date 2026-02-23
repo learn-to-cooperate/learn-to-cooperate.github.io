@@ -12,4 +12,5 @@
 * [Cooperation in Crises](entries/0008)
 * [When cooperation is not optional](entries/0009)
 * [`CONTRIBUTING.md`](entries/0010)
+* [A Public Domain Picture](entries/0011)
 * [{{Title}}](entries/_template)
